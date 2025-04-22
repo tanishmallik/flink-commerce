@@ -1,3 +1,63 @@
-[user@dinm5CD42655LX FlinkCommerce]$ docker exec -it broker kafka-topics.sh --bootstrap-server localhost:9092 --list
-OCI runtime exec failed: exec failed: unable to start container process: exec: "kafka-topics.sh": executable file not found in $PATH: unknown
-[user@dinm5CD42655LX FlinkCommerce]$ 
+2025-04-22 14:36:38
+org.apache.flink.runtime.JobException: Recovery is suppressed by NoRestartBackoffTimeStrategy
+	at org.apache.flink.runtime.executiongraph.failover.flip1.ExecutionFailureHandler.handleFailure(ExecutionFailureHandler.java:176)
+	at org.apache.flink.runtime.executiongraph.failover.flip1.ExecutionFailureHandler.getGlobalFailureHandlingResult(ExecutionFailureHandler.java:126)
+	at org.apache.flink.runtime.scheduler.DefaultScheduler.handleGlobalFailure(DefaultScheduler.java:328)
+	at org.apache.flink.runtime.operators.coordination.OperatorCoordinatorHolder$LazyInitializedCoordinatorContext.lambda$failJob$0(OperatorCoordinatorHolder.java:642)
+	at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.lambda$handleRunAsync$4(PekkoRpcActor.java:451)
+	at org.apache.flink.runtime.concurrent.ClassLoadingUtils.runWithContextClassLoader(ClassLoadingUtils.java:68)
+	at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRunAsync(PekkoRpcActor.java:451)
+	at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcMessage(PekkoRpcActor.java:218)
+	at org.apache.flink.runtime.rpc.pekko.FencedPekkoRpcActor.handleRpcMessage(FencedPekkoRpcActor.java:85)
+	at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleMessage(PekkoRpcActor.java:168)
+	at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:33)
+	at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:29)
+	at scala.PartialFunction.applyOrElse(PartialFunction.scala:127)
+	at scala.PartialFunction.applyOrElse$(PartialFunction.scala:126)
+	at org.apache.pekko.japi.pf.UnitCaseStatement.applyOrElse(CaseStatements.scala:29)
+	at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:175)
+	at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176)
+	at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176)
+	at org.apache.pekko.actor.Actor.aroundReceive(Actor.scala:547)
+	at org.apache.pekko.actor.Actor.aroundReceive$(Actor.scala:545)
+	at org.apache.pekko.actor.AbstractActor.aroundReceive(AbstractActor.scala:229)
+	at org.apache.pekko.actor.ActorCell.receiveMessage(ActorCell.scala:590)
+	at org.apache.pekko.actor.ActorCell.invoke(ActorCell.scala:557)
+	at org.apache.pekko.dispatch.Mailbox.processMailbox(Mailbox.scala:280)
+	at org.apache.pekko.dispatch.Mailbox.run(Mailbox.scala:241)
+	at org.apache.pekko.dispatch.Mailbox.exec(Mailbox.scala:253)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source)
+Caused by: org.apache.flink.util.FlinkException: Global failure triggered by OperatorCoordinator for 'Source: Kafka source -> Sink: Print to Std. Out' (operator cbc357ccb763df2852fee8c4fc7d55f2).
+	at org.apache.flink.runtime.operators.coordination.OperatorCoordinatorHolder$LazyInitializedCoordinatorContext.failJob(OperatorCoordinatorHolder.java:624)
+	at org.apache.flink.runtime.operators.coordination.RecreateOnResetOperatorCoordinator$QuiesceableContext.failJob(RecreateOnResetOperatorCoordinator.java:248)
+	at org.apache.flink.runtime.source.coordinator.SourceCoordinatorContext.failJob(SourceCoordinatorContext.java:395)
+	at org.apache.flink.runtime.source.coordinator.SourceCoordinatorContext.handleUncaughtExceptionFromAsyncCall(SourceCoordinatorContext.java:408)
+	at org.apache.flink.util.ThrowableCatchingRunnable.run(ThrowableCatchingRunnable.java:42)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: org.apache.flink.util.FlinkRuntimeException: Failed to list subscribed topic partitions due to 
+	at org.apache.flink.connector.kafka.source.enumerator.KafkaSourceEnumerator.checkPartitionChanges(KafkaSourceEnumerator.java:248)
+	at org.apache.flink.runtime.source.coordinator.ExecutorNotifier.lambda$null$1(ExecutorNotifier.java:83)
+	at org.apache.flink.util.ThrowableCatchingRunnable.run(ThrowableCatchingRunnable.java:40)
+	... 6 more
+Caused by: java.lang.RuntimeException: Failed to get metadata for topics [financial_transactions].
+	at org.apache.flink.connector.kafka.source.enumerator.subscriber.KafkaSubscriberUtils.getTopicMetadata(KafkaSubscriberUtils.java:47)
+	at org.apache.flink.connector.kafka.source.enumerator.subscriber.TopicListSubscriber.getSubscribedTopicPartitions(TopicListSubscriber.java:52)
+	at org.apache.flink.connector.kafka.source.enumerator.KafkaSourceEnumerator.getSubscribedTopicPartitions(KafkaSourceEnumerator.java:233)
+	at org.apache.flink.runtime.source.coordinator.ExecutorNotifier.lambda$notifyReadyAsync$2(ExecutorNotifier.java:80)
+	... 6 more
+Caused by: java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: describeTopics
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(Unknown Source)
+	at java.base/java.util.concurrent.CompletableFuture.get(Unknown Source)
+	at org.apache.kafka.common.internals.KafkaFutureImpl.get(KafkaFutureImpl.java:165)
+	at org.apache.flink.connector.kafka.source.enumerator.subscriber.KafkaSubscriberUtils.getTopicMetadata(KafkaSubscriberUtils.java:44)
+	... 9 more
+Caused by: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: describeTopics
