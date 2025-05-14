@@ -1,91 +1,12 @@
+[INFO] Replacing original artifact with shaded artifact.
+[INFO] Replacing /mnt/c/Users/z00505yp/workspace/FlinkCommerce/target/FlinkCommerce-1.0-SNAPSHOT.jar with /mnt/c/Users/z00505yp/workspace/FlinkCommerce/target/FlinkCommerce-1.0-SNAPSHOT-shaded.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  10.140 s
+[INFO] Finished at: 2025-05-14T14:38:48+05:30
+[INFO] ------------------------------------------------------------------------
+[user@dinm5CD42655LX FlinkCommerce]$ 
 
-version: '3.8'
 
-networks:
-  kafkaflinkpostgres:
-    driver: bridge
-
-services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.4.0
-    hostname: zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    healthcheck:
-      test: [ "CMD", "bash", "-c", "echo 'ruok' | nc localhost 2181" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - kafkaflinkpostgres
-
-  broker:
-    image: confluentinc/cp-kafka:7.4.0
-    hostname: broker
-    container_name: broker
-    depends_on:
-      zookeeper:
-        condition: service_healthy
-    ports:
-      - "9092:9092"
-      - "9101:9101"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_JMX_PORT: 9101
-      KAFKA_JMX_HOSTNAME: localhost
-    healthcheck:
-      test: [ "CMD", "bash", "-c", 'nc -z localhost 9092' ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - kafkaflinkpostgres
-
-  jobmanager:
-    image: flink:1.18.0
-    expose:
-      - "6123"
-    ports:
-      - "8081:8081"
-    command: jobmanager
-    networks:
-      kafkaflinkpostgres:
-        aliases:
-          - jobmanager     
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
-      - TZ=Asia/Kolkata      
-
-  taskmanager:
-    image: flink:1.18.0
-    depends_on:
-      - jobmanager
-    command: taskmanager
-    deploy:
-      replicas: 4
-    networks:
-      kafkaflinkpostgres:
-        aliases:
-          - taskmanager    
-    links:
-      - "jobmanager:jobmanager"
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
-      - TZ=Asia/Kolkata    
-      - FLINK_PROPERTIES=parallelism.default: 2
-
-services.taskmanager.environment.[2]: unexpected type map[string]interface {}
-(venv) [user@dinm5CD42655LX FlinkCommerce]$ 
+put the target file in docker container and then execute it for flink
