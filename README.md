@@ -1,3 +1,9 @@
-[user@dinm5CD42655LX FlinkCommerce]$ docker exec -it flinkcommerce-jobmanager-1 run -c FlinkCommerce.DataStreamJob /opt/flink/lib/FlinkCommerce-1.0-SNAPSHOT.jar
-OCI runtime exec failed: exec failed: unable to start container process: exec: "run": executable file not found in $PATH: unknown
-[user@dinm5CD42655LX FlinkCommerce]$ 
+[user@dinm5CD42655LX FlinkCommerce]$ docker exec -it flinkcommerce-jobmanager-1 fli
+nk run -c FlinkCommerce.DataStreamJob /opt/flink/lib/FlinkCommerce-1.0-SNAPSHOT.jar
+WARNING: Unknown module: jdk.compiler specified to --add-exports
+WARNING: Unknown module: jdk.compiler specified to --add-exports
+WARNING: Unknown module: jdk.compiler specified to --add-exports
+WARNING: Unknown module: jdk.compiler specified to --add-exports
+WARNING: Unknown module: jdk.compiler specified to --add-exports
+Job has been submitted with JobID 8fd8da2d2080f13b283afba648891b83
+
