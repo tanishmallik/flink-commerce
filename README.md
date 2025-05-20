@@ -233,3 +233,13 @@ Caused by: java.lang.ClassCastException: cannot assign instance of org.apache.ka
         at org.apache.flink.runtime.executiongraph.ExecutionJobVertex.createOperatorCoordinatorHolder(ExecutionJobVertex.java:292)
         at org.apache.flink.runtime.executiongraph.ExecutionJobVertex.initialize(ExecutionJobVertex.java:225)
         ... 20 more
+
+
+SELECT * FROM process_milestone;
+3	REG_EXT_TRIG_DAILY_MIDNIGHT	REG_EXTRAPOLATION_DONE_TILL	20-MAR-25 12.00.00.000000000 AM
+2	REG_EXT_TRIG_DAILY_NONMIDNIGHT	REG_EXTRAPOLATION_DONE_TILL	21-MAR-25 06.00.00.000000000 AM
+1	DailyExtrapolationTrigger	EXTRAPOLATION_DONE_TILL	20-MAR-25 12.00.00.000000000 AM
+51	Register Notification	Org Name - TNB	30-APR-24 02.44.16.000000000 PM
+
+edit the table value in column "MILESTONE_TIME" WHERE process_name="DailyExtrapolationTrigger", change time to 1 am
+
