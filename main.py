@@ -1,73 +1,64 @@
 import json
-from confluent_kafka import Producer
-from datetime import datetime, timezone
+import random
+import time
 
-def charger_status_data():
-    # Directly take input data — no logic applied here
-    charger_groups = [
-        {
-            "charger_group_id": "g001",
-            "chargers": [
-                {"chargerId": "c001", "status": "Online"},
-                {"chargerId": "c002", "status": "Online"},
-                {"chargerId": "c003", "status": "Online"},
-                {"chargerId": "c004", "status": "Online"},
-                {"chargerId": "c005", "status": "Online"}
-            ],
-            
-        },
-        {
-            "charger_group_id": "g002",
-            "chargers": [
-                {"chargerId": "c006", "status": "Engaged"},
-                {"chargerId": "c007", "status": "Failure"},
-                {"chargerId": "c008", "status": "Engaged"},
-                {"chargerId": "c009", "status": "Engaged"},
-                {"chargerId": "c010", "status": "Engaged"}
-            ],
-           
-        },
-        {
-            "charger_group_id": "g003",
-            "chargers": [
-                {"chargerId": "c011", "status": "Online"},
-                {"chargerId": "c012", "status": "Engaged"},
-                {"chargerId": "c013", "status": "Online"},
-                {"chargerId": "c014", "status": "Engaged"},
-                {"chargerId": "c015", "status": "Online"}
-            ],
-            
-        }
-    ]
+from faker import Faker
+from confluent_kafka import SerializingProducer
+from datetime import datetime
 
-    charger_data = {
-        "stationId": "station_001",
-        "timestamp": datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-        "chargerGroups": charger_groups
+fake = Faker()
+
+def generate_sales_transactions():
+    user = fake.simple_profile()
+
+    return {
+        "transactionId": fake.uuid4(),
+        "productId": random.choice(['product1', 'product2', 'product3', 'product4', 'product5', 'product6']),
+        "productName": random.choice(['laptop', 'mobile', 'tablet', 'watch', 'headphone', 'speaker']),
+        'productCategory': random.choice(['electronic', 'fashion', 'grocery', 'home', 'beauty', 'sports']),
+        'productPrice': round(random.uniform(10, 1000), 2),
+        'productQuantity': random.randint(1, 10),
+        'productBrand': random.choice(['apple', 'samsung', 'oneplus', 'mi', 'boat', 'sony']),
+        'currency': random.choice(['USD', 'GBP']),
+        'customerId': user['username'],
+        'transactionDate': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f%z'),
+        "paymentMethod": random.choice(['credit_card', 'debit_card', 'online_transfer'])
     }
-
-    return charger_data
 
 def delivery_report(err, msg):
     if err is not None:
-        print(f"Delivery failed for record {msg.key()}: {err}")
+        print(f'Message delivery failed: {err}')
     else:
-        print(f"Record {msg.key()} successfully produced to {msg.topic()} partition {msg.partition()}")
-
+        print(f"Message delivered to {msg.topic} [{msg.partition()}]")
 def main():
-    kafka_conf = {
-        'bootstrap.servers': 'localhost:9092',
-    }
+    topic = 'financial_transactions'
+    producer= SerializingProducer({
+        'bootstrap.servers': 'localhost:9092'
+    })
 
-    producer = Producer(kafka_conf)
-    topic = 'station_charger_status'
+    curr_time = datetime.now()
 
-    charger_data = charger_status_data()
-    message_key = charger_data['stationId']
-    message_value = json.dumps(charger_data)
+    while (datetime.now() - curr_time).seconds < 120:
+        try:
+            transaction = generate_sales_transactions()
+            transaction['totalAmount'] = transaction['productPrice'] * transaction['productQuantity']
 
-    producer.produce(topic=topic, key=message_key, value=message_value, callback=delivery_report)
-    producer.flush()
+            print(transaction)
+
+            producer.produce(topic,
+                             key=transaction['transactionId'],
+                             value=json.dumps(transaction),
+                             on_delivery=delivery_report
+                             )
+            producer.poll(0)
+
+            #wait for 5 seconds before sending the next transaction
+            time.sleep(5)
+        except BufferError:
+            print("Buffer full! Waiting...")
+            time.sleep(1)
+        except Exception as e:
+            print(e)
 
 if __name__ == "__main__":
     main()
