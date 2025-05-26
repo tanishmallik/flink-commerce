@@ -1,4 +1,4 @@
-//kafka zookeeper, broker, flink taskmanager, jobmanager
+
 version: '3.8'
 
 networks:
@@ -53,54 +53,37 @@ services:
       retries: 5
     networks:
       - kafkaflinkpostgres
+      
+  # jobmanager:
+  #   image: flink:1.18.0
+  #   expose:
+  #     - "6123"
+  #   ports:
+  #     - "8081:8081"
+  #   command: jobmanager
+  #   networks:
+  #     kafkaflinkpostgres:
+  #       aliases:
+  #         - jobmanager     
+  #   environment:
+  #     - JOB_MANAGER_RPC_ADDRESS=jobmanager
+  #     - TZ=Asia/Kolkata      
 
-  jobmanager:
-    image: flink:1.18.0
-    expose:
-      - "6123"
-    ports:
-      - "8081:8081"
-    command: jobmanager
-    networks:
-      kafkaflinkpostgres:
-        aliases:
-          - jobmanager     
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
-      - TZ=Asia/Kolkata      
-
-  taskmanager:
-    image: flink:1.18.0
-    depends_on:
-      - jobmanager
-    command: taskmanager
-    networks:
-      kafkaflinkpostgres:
-        aliases:
-          - taskmanager    
-    links:
-      - "jobmanager:jobmanager"
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
-      - TZ=Asia/Kolkata    
-
-  appserver:
-    image: python:3.10
-    environment:
-      - TZ=Asia/Kolkata    
-    volumes:
-      - .:/app
-    working_dir: /app
-    networks:
-      kafkaflinkpostgres:
-        aliases:
-          - appserver    
-    command: bash -c "
-      apt update &&
-      dpkg -i jdk-11.0.21_linux-x64_bin.deb &&
-      python3 -m venv /home/myenv &&
-      source /home/myenv/bin/activate &&
-      pip install kafka-python &&
-      pip install apache-flink &&
-      python3 your-python-code/run.py
-      "
+  # taskmanager:
+  #   image: flink:1.18.0
+  #   depends_on:
+  #     - jobmanager
+  #   command: taskmanager
+  #   networks:
+  #     kafkaflinkpostgres:
+  #       aliases:
+  #         - taskmanager    
+  #   links:
+  #     - "jobmanager:jobmanager"
+  #   environment:
+  #     - JOB_MANAGER_RPC_ADDRESS=jobmanager
+  #     - TZ=Asia/Kolkata    
+  #     - |
+  #        FLINK_PROPERTIES=
+  #        parallelism.default: 2
+  #        taskmanager.numberOfTaskSlots: 4
